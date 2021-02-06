@@ -1,4 +1,6 @@
-specVersion: 0.0.1
+specVersion: 0.0.2
+description: NuCypher - Threshold Cryptography Network
+repository: https://github.com/nucypher/nucypher-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
@@ -6,11 +8,12 @@ dataSources:
     name: StakingEscrow
     network: mainnet
     source:
-      address: "0xf6d5137cfa2c5f23530a0fce66056b12b985554d"
+      address: "0xbbD3C0C794F40c4f993B03F65343aCC6fcfCb2e2"
       abi: StakingEscrow
+      startBlock: 10763506
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.2
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
         - CommitmentMade
@@ -35,7 +38,7 @@ dataSources:
         - WorkerBonded
       abis:
         - name: StakingEscrow
-          file: ./abis/StakingEscrow.json
+          file: ./abis/StakingEscrow-5.5.1.json
       eventHandlers:
         - event: CommitmentMade(indexed address,indexed uint16,uint256)
           handler: handleCommitmentMade
@@ -77,4 +80,55 @@ dataSources:
           handler: handleWorkMeasurementSet
         - event: WorkerBonded(indexed address,indexed address,indexed uint16)
           handler: handleWorkerBonded
-      file: ./src/mapping.ts
+      file: ./src/StakingEscrow-mapping.ts
+  - kind: ethereum/contract
+    name: PolicyManager
+    network: mainnet
+    source:
+      address: "0x67E4A942c067Ff25cE7705B69C318cA2Dfa54D64"
+      abi: PolicyManager
+      startBlock: 10763506
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ArrangementRevoked
+        - FeeRateRangeSet
+        - MinFeeRateSet
+        - OwnershipTransferred
+        - PolicyCreated
+        - PolicyRevoked
+        - RefundForArrangement
+        - RefundForPolicy
+        - StateVerified
+        - UpgradeFinished
+        - Withdrawn
+      abis:
+        - name: PolicyManager
+          file: ./abis/PolicyManager-6.3.1.json
+      eventHandlers:
+        - event: ArrangementRevoked(indexed bytes16,indexed address,indexed address,uint256)
+          handler: handleArrangementRevoked
+        - event: FeeRateRangeSet(indexed address,uint256,uint256,uint256)
+          handler: handleFeeRateRangeSet
+        - event: MinFeeRateSet(indexed address,uint256)
+          handler: handleMinFeeRateSet
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PolicyCreated(indexed bytes16,indexed address,indexed address,uint256,uint64,uint64,uint256)
+          handler: handlePolicyCreated
+        - event: PolicyRevoked(indexed bytes16,indexed address,uint256)
+          handler: handlePolicyRevoked
+        - event: RefundForArrangement(indexed bytes16,indexed address,indexed address,uint256)
+          handler: handleRefundForArrangement
+        - event: RefundForPolicy(indexed bytes16,indexed address,uint256)
+          handler: handleRefundForPolicy
+        - event: StateVerified(indexed address,address)
+          handler: handleStateVerified
+        - event: UpgradeFinished(indexed address,address)
+          handler: handleUpgradeFinished
+        - event: Withdrawn(indexed address,indexed address,uint256)
+          handler: handleWithdrawn
+      file: ./src/PolicyManager-mapping.ts
+
