@@ -688,28 +688,6 @@
   },
   {
     "inputs": [
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" },
-      { "internalType": "uint256", "name": "_startIndex", "type": "uint256" },
-      { "internalType": "uint256", "name": "_maxStakers", "type": "uint256" }
-    ],
-    "name": "getActiveStakers",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "allLockedTokens",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[2][]",
-        "name": "activeStakers",
-        "type": "uint256[2][]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
       { "internalType": "address", "name": "_staker", "type": "address" }
     ],
     "name": "getAllTokens",

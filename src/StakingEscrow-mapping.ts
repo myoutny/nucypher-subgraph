@@ -24,6 +24,7 @@ import {
 } from "../generated/StakingEscrow/StakingEscrow"
 import { ExampleEntity } from "../generated/schema"
 
+
 export function handleCommitmentMade(event: CommitmentMade): void {
   // Entities can be loaded from the store using a string ID; this ID
   // needs to be unique across all entities of the same type
