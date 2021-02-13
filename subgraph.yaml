@@ -131,4 +131,3 @@ dataSources:
         - event: Withdrawn(indexed address,indexed address,uint256)
           handler: handleWithdrawn
       file: ./src/PolicyManager-mapping.ts
-

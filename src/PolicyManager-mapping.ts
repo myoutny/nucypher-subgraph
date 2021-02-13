@@ -13,7 +13,10 @@ import {
   UpgradeFinished,
   Withdrawn
 } from "../generated/PolicyManager/PolicyManager"
-import { ExampleEntity } from "../generated/schema"
+import {
+  Staker,
+  Policy
+} from "../generated/schema"
 
 export function handleArrangementRevoked(event: ArrangementRevoked): void {
   // Entities can be loaded from the store using a string ID; this ID
