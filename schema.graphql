@@ -1,12 +1,49 @@
+"""
+A Stake on the nucypher network.
+"""
 type Staker @entity {
+  "Staker ethereum address"
   id: ID!
-  commitment: BigInt
+  "Total amount staked"
   staked: BigInt
+  "Total deposits"
+  deposited: BigInt
+  "Total amount slashed"
+  slashed: BigInt
+  "Number of substakes"
   substakes: BigInt
+  "If the staker is bonded to a worker."
   bonded: Boolean
+  "Worker address staker is bonded to"
   worker: String
+  "Currently committed period"
+  commitment: BigInt
+  "Total amount minted"
   minted: BigInt
+  "Total withdraws"
   withdrawn: BigInt
+  "Restaking enabled/disabled"
   restaking: Boolean
+  "Wind-down enabled/disabled"
   winding_down: Boolean
+  "Period migration performed"
+  migrated: Boolean
+  "Snapshots enabled/disabled"
+  snapshots: Boolean
+}
+
+"""
+A single service period on the nucypher network.
+"""
+type Period @entity {
+  "Period number used as ID"
+  id: ID!
+  "Block timestamp at the begenning of the period"
+  timestamp: Int
+  "Total amount staked in this period"
+  totalStaked: BigInt
+  "Number of active stakers in this period"
+  activeStakers: BigInt
+  "Circulating supply in this period"
+  circulatingSupply: BigInt
 }

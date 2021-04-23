@@ -39,4 +39,11 @@ dataSources:
           handler: handleWithdrawn
         - event: WorkerBonded(indexed address,indexed address,indexed uint16)
           handler: handleWorkerBonded
+        - event: Migrated(indexed address,indexed uint16)
+          handler: handleMigrated
+        - event: SnapshotSet(indexed address,bool)
+          handler: handleSnapshotSet
+        - event: Slashed(indexed address,uint256,indexed address,uint256)
+          handler: handleSlashed
+
       file: ./src/StakingEscrow-mapping.ts
