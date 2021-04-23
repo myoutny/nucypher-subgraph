@@ -1,4 +1,4 @@
-import {BigInt, String} from "@graphprotocol/graph-ts"
+import {BigInt} from "@graphprotocol/graph-ts"
 import {
     CommitmentMade,
     Divided,
@@ -10,7 +10,7 @@ import {
     Withdrawn,
     WorkerBonded
 } from "../generated/StakingEscrow/StakingEscrow"
-import {Staker} from "../schema"
+import {Staker} from "../generated/schema"
 
 export function handleLocked(event: Locked): void {
     let staker = Staker.load(event.transaction.from.toHex())
@@ -22,7 +22,7 @@ export function handleLocked(event: Locked): void {
         staker.restaking = true
         staker.winding_down = false
         staker.bonded = false
-        staker.worker = String()
+        staker.worker = ''
         staker.substakes = BigInt.fromI32(1)
         staker.minted = BigInt.fromI32(0)
         staker.withdrawn = BigInt.fromI32(0)
@@ -30,7 +30,7 @@ export function handleLocked(event: Locked): void {
 
     } else {
         staker.substakes = staker.substakes + BigInt.fromI32(1)
-        staker.totalStake = staker.staked + BigInt.fromI32(event.params.value)
+        staker.staked = staker.staked + event.params.value
     }
     staker.save()
 }
@@ -50,13 +50,13 @@ export function handleMerged(event: Merged): void {
 
 export function handleCommitmentMade(event: CommitmentMade): void {
     let staker = Staker.load(event.transaction.from.toHex())
-    staker.commitment = event.params.period
+    staker.commitment = BigInt.fromI32(event.params.period)
     staker.save()
 }
 
 export function handleMinted(event: Minted): void {
     let staker = Staker.load(event.transaction.from.toHex())
-    staker.minted = staker.minted + BigInt.fromI32(event.params.value)
+    staker.minted = staker.minted + event.params.value
     staker.save()
 }
 
@@ -74,13 +74,13 @@ export function handleWindDownSet(event: WindDownSet): void {
 
 export function handleWithdrawn(event: Withdrawn): void {
     let staker = Staker.load(event.transaction.from.toHex())
-    staker.withdrawn = staker.withdrawn + BigInt.fromI32(event.transaction.value)
+    staker.withdrawn = staker.withdrawn + event.transaction.value
     staker.save()
 }
 
 export function handleWorkerBonded(event: WorkerBonded): void {
     let staker = Staker.load(event.transaction.from.toHex())
     staker.bonded = true
-    staker.worker = event.params.worker
+    staker.worker = event.params.worker.toHex()
     staker.save()
 }

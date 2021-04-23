@@ -16,17 +16,7 @@ dataSources:
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - CommitmentMade
-        - Divided
-        - Locked
-        - Merged
-        - Minted
-        - Prolonged
-        - ReStakeSet
-        - Slashed
-        - WindDownSet
-        - Withdrawn
-        - WorkerBonded
+        - Staker
       abis:
         - name: StakingEscrow
           file: ./abis/StakingEscrow-5.7.1.json
