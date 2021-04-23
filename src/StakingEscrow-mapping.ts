@@ -1,157 +1,86 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import {BigInt, String} from "@graphprotocol/graph-ts"
 import {
-  StakingEscrow,
-  CommitmentMade,
-  Deposited,
-  Divided,
-  Donated,
-  Initialized,
-  Locked,
-  Merged,
-  Minted,
-  OwnershipTransferred,
-  Prolonged,
-  ReStakeLocked,
-  ReStakeSet,
-  Slashed,
-  SnapshotSet,
-  StateVerified,
-  UpgradeFinished,
-  WindDownSet,
-  Withdrawn,
-  WorkMeasurementSet,
-  WorkerBonded
+    CommitmentMade,
+    Divided,
+    Locked,
+    Merged,
+    Minted,
+    ReStakeSet,
+    WindDownSet,
+    Withdrawn,
+    WorkerBonded
 } from "../generated/StakingEscrow/StakingEscrow"
-import { ExampleEntity } from "../generated/schema"
+import {Staker} from "../schema"
+
+export function handleLocked(event: Locked): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    if (staker == null) {
+        staker = new Staker(event.transaction.from.toHex())
+
+        // Defaults
+        staker.staked = event.params.value
+        staker.restaking = true
+        staker.winding_down = false
+        staker.bonded = false
+        staker.worker = String()
+        staker.substakes = BigInt.fromI32(1)
+        staker.minted = BigInt.fromI32(0)
+        staker.withdrawn = BigInt.fromI32(0)
+        staker.commitment = BigInt.fromI32(0)
+
+    } else {
+        staker.substakes = staker.substakes + BigInt.fromI32(1)
+        staker.totalStake = staker.staked + BigInt.fromI32(event.params.value)
+    }
+    staker.save()
+}
+
+export function handleDivided(event: Divided): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.substakes = staker.substakes + BigInt.fromI32(1)
+    staker.save()
+}
+
+export function handleMerged(event: Merged): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.substakes = staker.substakes - BigInt.fromI32(1)
+    staker.save()
+}
 
 
 export function handleCommitmentMade(event: CommitmentMade): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
-
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (entity == null) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
-
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
-  }
-
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
-
-  // Entity fields can be set based on event parameters
-  entity.staker = event.params.staker
-  entity.period = event.params.period
-
-  // Entities can be written to the store with `.save()`
-  entity.save()
-
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.MAX_SUB_STAKES(...)
-  // - contract.adjudicator(...)
-  // - contract.balanceHistory(...)
-  // - contract.currentMintingPeriod(...)
-  // - contract.currentPeriodSupply(...)
-  // - contract.findIndexOfPastDowntime(...)
-  // - contract.firstPhaseMaxIssuance(...)
-  // - contract.firstPhaseTotalSupply(...)
-  // - contract.getActiveStakers(...)
-  // - contract.getAllTokens(...)
-  // - contract.getCompletedWork(...)
-  // - contract.getCurrentPeriod(...)
-  // - contract.getFlags(...)
-  // - contract.getLastCommittedPeriod(...)
-  // - contract.getLastPeriodOfSubStake(...)
-  // - contract.getLockedTokens(...)
-  // - contract.getPastDowntime(...)
-  // - contract.getPastDowntimeLength(...)
-  // - contract.getReservedReward(...)
-  // - contract.getStakersLength(...)
-  // - contract.getSubStakeInfo(...)
-  // - contract.getSubStakesLength(...)
-  // - contract.getWorkerFromStaker(...)
-  // - contract.isOwner(...)
-  // - contract.isReStakeLocked(...)
-  // - contract.isTestContract(...)
-  // - contract.isUpgrade(...)
-  // - contract.lockDurationCoefficient1(...)
-  // - contract.lockDurationCoefficient2(...)
-  // - contract.lockedPerPeriod(...)
-  // - contract.maxAllowableLockedTokens(...)
-  // - contract.maximumRewardedPeriods(...)
-  // - contract.minAllowableLockedTokens(...)
-  // - contract.minLockedPeriods(...)
-  // - contract.minWorkerPeriods(...)
-  // - contract.mintingCoefficient(...)
-  // - contract.owner(...)
-  // - contract.policyManager(...)
-  // - contract.previousPeriodSupply(...)
-  // - contract.previousTarget(...)
-  // - contract.secondsPerPeriod(...)
-  // - contract.setWorkMeasurement(...)
-  // - contract.stakerFromWorker(...)
-  // - contract.stakerInfo(...)
-  // - contract.stakers(...)
-  // - contract.supportsHistory(...)
-  // - contract.target(...)
-  // - contract.token(...)
-  // - contract.totalStakedAt(...)
-  // - contract.totalStakedForAt(...)
-  // - contract.totalSupply(...)
-  // - contract.workLock(...)
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.commitment = event.params.period
+    staker.save()
 }
 
-export function handleDeposited(event: Deposited): void {}
+export function handleMinted(event: Minted): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.minted = staker.minted + BigInt.fromI32(event.params.value)
+    staker.save()
+}
 
-export function handleDivided(event: Divided): void {}
+export function handleReStakeSet(event: ReStakeSet): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.restaking = event.params.reStake
+    staker.save()
+}
 
-export function handleDonated(event: Donated): void {}
+export function handleWindDownSet(event: WindDownSet): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.winding_down = event.params.windDown
+    staker.save()
+}
 
-export function handleInitialized(event: Initialized): void {}
+export function handleWithdrawn(event: Withdrawn): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.withdrawn = staker.withdrawn + BigInt.fromI32(event.transaction.value)
+    staker.save()
+}
 
-export function handleLocked(event: Locked): void {}
-
-export function handleMerged(event: Merged): void {}
-
-export function handleMinted(event: Minted): void {}
-
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
-
-export function handleProlonged(event: Prolonged): void {}
-
-export function handleReStakeLocked(event: ReStakeLocked): void {}
-
-export function handleReStakeSet(event: ReStakeSet): void {}
-
-export function handleSlashed(event: Slashed): void {}
-
-export function handleSnapshotSet(event: SnapshotSet): void {}
-
-export function handleStateVerified(event: StateVerified): void {}
-
-export function handleUpgradeFinished(event: UpgradeFinished): void {}
-
-export function handleWindDownSet(event: WindDownSet): void {}
-
-export function handleWithdrawn(event: Withdrawn): void {}
-
-export function handleWorkMeasurementSet(event: WorkMeasurementSet): void {}
-
-export function handleWorkerBonded(event: WorkerBonded): void {}
+export function handleWorkerBonded(event: WorkerBonded): void {
+    let staker = Staker.load(event.transaction.from.toHex())
+    staker.bonded = true
+    staker.worker = event.params.worker
+    staker.save()
+}

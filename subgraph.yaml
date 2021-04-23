@@ -17,117 +17,36 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - CommitmentMade
-        - Deposited
         - Divided
-        - Donated
-        - Initialized
         - Locked
         - Merged
         - Minted
-        - OwnershipTransferred
         - Prolonged
-        - ReStakeLocked
         - ReStakeSet
         - Slashed
-        - SnapshotSet
-        - StateVerified
-        - UpgradeFinished
         - WindDownSet
         - Withdrawn
-        - WorkMeasurementSet
         - WorkerBonded
       abis:
         - name: StakingEscrow
-          file: ./abis/StakingEscrow-5.5.1.json
+          file: ./abis/StakingEscrow-5.7.1.json
       eventHandlers:
         - event: CommitmentMade(indexed address,indexed uint16,uint256)
           handler: handleCommitmentMade
-        - event: Deposited(indexed address,uint256,uint16)
-          handler: handleDeposited
         - event: Divided(indexed address,uint256,uint16,uint256,uint16)
           handler: handleDivided
-        - event: Donated(indexed address,uint256)
-          handler: handleDonated
-        - event: Initialized(uint256)
-          handler: handleInitialized
         - event: Locked(indexed address,uint256,uint16,uint16)
           handler: handleLocked
         - event: Merged(indexed address,uint256,uint256,uint16)
           handler: handleMerged
         - event: Minted(indexed address,indexed uint16,uint256)
           handler: handleMinted
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: Prolonged(indexed address,uint256,uint16,uint16)
-          handler: handleProlonged
-        - event: ReStakeLocked(indexed address,uint16)
-          handler: handleReStakeLocked
         - event: ReStakeSet(indexed address,bool)
           handler: handleReStakeSet
-        - event: Slashed(indexed address,uint256,indexed address,uint256)
-          handler: handleSlashed
-        - event: SnapshotSet(indexed address,bool)
-          handler: handleSnapshotSet
-        - event: StateVerified(indexed address,address)
-          handler: handleStateVerified
-        - event: UpgradeFinished(indexed address,address)
-          handler: handleUpgradeFinished
         - event: WindDownSet(indexed address,bool)
           handler: handleWindDownSet
         - event: Withdrawn(indexed address,uint256)
           handler: handleWithdrawn
-        - event: WorkMeasurementSet(indexed address,bool)
-          handler: handleWorkMeasurementSet
         - event: WorkerBonded(indexed address,indexed address,indexed uint16)
           handler: handleWorkerBonded
       file: ./src/StakingEscrow-mapping.ts
-  - kind: ethereum/contract
-    name: PolicyManager
-    network: mainnet
-    source:
-      address: "0x67E4A942c067Ff25cE7705B69C318cA2Dfa54D64"
-      abi: PolicyManager
-      startBlock: 10763506
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - ArrangementRevoked
-        - FeeRateRangeSet
-        - MinFeeRateSet
-        - OwnershipTransferred
-        - PolicyCreated
-        - PolicyRevoked
-        - RefundForArrangement
-        - RefundForPolicy
-        - StateVerified
-        - UpgradeFinished
-        - Withdrawn
-      abis:
-        - name: PolicyManager
-          file: ./abis/PolicyManager-6.3.1.json
-      eventHandlers:
-        - event: ArrangementRevoked(indexed bytes16,indexed address,indexed address,uint256)
-          handler: handleArrangementRevoked
-        - event: FeeRateRangeSet(indexed address,uint256,uint256,uint256)
-          handler: handleFeeRateRangeSet
-        - event: MinFeeRateSet(indexed address,uint256)
-          handler: handleMinFeeRateSet
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: PolicyCreated(indexed bytes16,indexed address,indexed address,uint256,uint64,uint64,uint256)
-          handler: handlePolicyCreated
-        - event: PolicyRevoked(indexed bytes16,indexed address,uint256)
-          handler: handlePolicyRevoked
-        - event: RefundForArrangement(indexed bytes16,indexed address,indexed address,uint256)
-          handler: handleRefundForArrangement
-        - event: RefundForPolicy(indexed bytes16,indexed address,uint256)
-          handler: handleRefundForPolicy
-        - event: StateVerified(indexed address,address)
-          handler: handleStateVerified
-        - event: UpgradeFinished(indexed address,address)
-          handler: handleUpgradeFinished
-        - event: Withdrawn(indexed address,indexed address,uint256)
-          handler: handleWithdrawn
-      file: ./src/PolicyManager-mapping.ts

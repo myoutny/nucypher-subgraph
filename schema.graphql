@@ -1,24 +1,12 @@
 type Staker @entity {
   id: ID!
-  active: Boolean
-  currentCommittedPeriod: BigInt
-  nextCommittedPeriod: BigInt
-  lastCommittedPeriod: BigInt
-  completedWork: BigInt
-  totalStake: BigInt
+  commitment: BigInt
+  staked: BigInt
+  substakes: BigInt
+  bonded: Boolean
   worker: String
-  workerStartPeriod: BigInt
-  #  Downtime[] pastDowntime;
-  #  SubStakeInfo[] subStakes;
-  #  uint128[] history;
-}
-
-type Policy @entity {
-  id: ID!
-  owner: String
-  owner: Sponsor
-  startTimestamp: BigInt
-  endTimestamp: BigInt
-  feeRate: BigInt
-  #  arrangements: [Arrangement]
+  minted: BigInt
+  withdrawn: BigInt
+  restaking: Boolean
+  winding_down: Boolean
 }
