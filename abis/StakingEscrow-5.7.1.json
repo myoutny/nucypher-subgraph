@@ -6,7 +6,31 @@
         "name": "_token",
         "type": "address"
       },
-      { "internalType": "uint32", "name": "_hoursPerPeriod", "type": "uint32" },
+      {
+        "internalType": "contract PolicyManagerInterface",
+        "name": "_policyManager",
+        "type": "address"
+      },
+      {
+        "internalType": "contract AdjudicatorInterface",
+        "name": "_adjudicator",
+        "type": "address"
+      },
+      {
+        "internalType": "contract WorkLockInterface",
+        "name": "_workLock",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_genesisHoursPerPeriod",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_hoursPerPeriod",
+        "type": "uint32"
+      },
       {
         "internalType": "uint256",
         "name": "_issuanceDecayCoefficient",
@@ -56,8 +80,7 @@
         "internalType": "uint16",
         "name": "_minWorkerPeriods",
         "type": "uint16"
-      },
-      { "internalType": "bool", "name": "_isTestContract", "type": "bool" }
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -257,6 +280,25 @@
         "internalType": "uint16",
         "name": "period",
         "type": "uint16"
+      }
+    ],
+    "name": "Migrated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint16",
+        "name": "period",
+        "type": "uint16"
       },
       {
         "indexed": false,
@@ -316,25 +358,6 @@
       }
     ],
     "name": "Prolonged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "staker",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "lockUntilPeriod",
-        "type": "uint16"
-      }
-    ],
-    "name": "ReStakeLocked",
     "type": "event"
   },
   {
@@ -529,7 +552,13 @@
   {
     "inputs": [],
     "name": "MAX_SUB_STAKES",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -547,31 +576,31 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "balanceHistory",
-    "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "_stakers", "type": "address[]" },
       {
-        "internalType": "uint256[]",
-        "name": "_numberOfSubStakes",
-        "type": "uint256[]"
-      },
-      { "internalType": "uint256[]", "name": "_values", "type": "uint256[]" },
-      { "internalType": "uint16[]", "name": "_periods", "type": "uint16[]" }
-    ],
-    "name": "batchDeposit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_worker", "type": "address" }
+        "internalType": "address",
+        "name": "_worker",
+        "type": "address"
+      }
     ],
     "name": "bondWorker",
     "outputs": [],
@@ -588,22 +617,46 @@
   {
     "inputs": [],
     "name": "currentMintingPeriod",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "currentPeriodSupply",
-    "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint256", "name": "_value", "type": "uint256" },
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_unlockingDuration",
+        "type": "uint16"
+      }
     ],
     "name": "deposit",
     "outputs": [],
@@ -612,8 +665,16 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_index", "type": "uint256" },
-      { "internalType": "uint256", "name": "_value", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
     ],
     "name": "depositAndIncrease",
     "outputs": [],
@@ -622,9 +683,21 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint256", "name": "_value", "type": "uint256" },
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_unlockingDuration",
+        "type": "uint16"
+      }
     ],
     "name": "depositFromWorkLock",
     "outputs": [],
@@ -633,9 +706,21 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_index", "type": "uint256" },
-      { "internalType": "uint256", "name": "_newValue", "type": "uint256" },
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" }
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newValue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_additionalDuration",
+        "type": "uint16"
+      }
     ],
     "name": "divideStake",
     "outputs": [],
@@ -644,7 +729,11 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_value", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
     ],
     "name": "donate",
     "outputs": [],
@@ -653,19 +742,35 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint16", "name": "_period", "type": "uint16" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_period",
+        "type": "uint16"
+      }
     ],
     "name": "findIndexOfPastDowntime",
     "outputs": [
-      { "internalType": "uint256", "name": "index", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_target", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_target",
+        "type": "address"
+      }
     ],
     "name": "finishUpgrade",
     "outputs": [],
@@ -675,153 +780,381 @@
   {
     "inputs": [],
     "name": "firstPhaseMaxIssuance",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "firstPhaseTotalSupply",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "genesisSecondsPerPeriod",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "uint16",
+        "name": "_offsetPeriods",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_startIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxStakers",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActiveStakers",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "allLockedTokens",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[2][]",
+        "name": "activeStakers",
+        "type": "uint256[2][]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getAllTokens",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getCompletedWork",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "getCurrentPeriod",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getFlags",
     "outputs": [
-      { "internalType": "bool", "name": "windDown", "type": "bool" },
-      { "internalType": "bool", "name": "reStake", "type": "bool" },
-      { "internalType": "bool", "name": "measureWork", "type": "bool" },
-      { "internalType": "bool", "name": "snapshots", "type": "bool" }
+      {
+        "internalType": "bool",
+        "name": "windDown",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "reStake",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "measureWork",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "snapshots",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "migrated",
+        "type": "bool"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getLastCommittedPeriod",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
     ],
     "name": "getLastPeriodOfSubStake",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_offsetPeriods",
+        "type": "uint16"
+      }
     ],
     "name": "getLockedTokens",
     "outputs": [
-      { "internalType": "uint256", "name": "lockedValue", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "lockedValue",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
     ],
     "name": "getPastDowntime",
     "outputs": [
-      { "internalType": "uint16", "name": "startPeriod", "type": "uint16" },
-      { "internalType": "uint16", "name": "endPeriod", "type": "uint16" }
+      {
+        "internalType": "uint16",
+        "name": "startPeriod",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "endPeriod",
+        "type": "uint16"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getPastDowntimeLength",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "getReservedReward",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "getStakersLength",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint256", "name": "_index", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
     ],
     "name": "getSubStakeInfo",
     "outputs": [
-      { "internalType": "uint16", "name": "firstPeriod", "type": "uint16" },
-      { "internalType": "uint16", "name": "lastPeriod", "type": "uint16" },
-      { "internalType": "uint16", "name": "periods", "type": "uint16" },
-      { "internalType": "uint128", "name": "lockedValue", "type": "uint128" }
+      {
+        "internalType": "uint16",
+        "name": "firstPeriod",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "lastPeriod",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "unlockingDuration",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint128",
+        "name": "lockedValue",
+        "type": "uint128"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getSubStakesLength",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
     ],
     "name": "getWorkerFromStaker",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -832,7 +1165,11 @@
         "name": "_reservedReward",
         "type": "uint256"
       },
-      { "internalType": "address", "name": "_sourceOfFunds", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_sourceOfFunds",
+        "type": "address"
+      }
     ],
     "name": "initialize",
     "outputs": [],
@@ -842,37 +1179,41 @@
   {
     "inputs": [],
     "name": "isOwner",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" }
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
     ],
-    "name": "isReStakeLocked",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isTestContract",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "isUpgrade",
-    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_value", "type": "uint256" },
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" }
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_unlockingDuration",
+        "type": "uint16"
+      }
     ],
     "name": "lockAndCreate",
     "outputs": [],
@@ -881,8 +1222,16 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_index", "type": "uint256" },
-      { "internalType": "uint256", "name": "_value", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
     ],
     "name": "lockAndIncrease",
     "outputs": [],
@@ -892,14 +1241,26 @@
   {
     "inputs": [],
     "name": "lockDurationCoefficient1",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "lockDurationCoefficient2",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -907,40 +1268,59 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_lockReStakeUntilPeriod",
+        "name": "_period",
         "type": "uint16"
       }
     ],
-    "name": "lockReStake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
     "name": "lockedPerPeriod",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "maxAllowableLockedTokens",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "maximumRewardedPeriods",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_index1", "type": "uint256" },
-      { "internalType": "uint256", "name": "_index2", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_index1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index2",
+        "type": "uint256"
+      }
     ],
     "name": "mergeStake",
     "outputs": [],
@@ -948,23 +1328,54 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
+    ],
+    "name": "migrate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "minAllowableLockedTokens",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "minLockedPeriods",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "minWorkerPeriods",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -978,14 +1389,26 @@
   {
     "inputs": [],
     "name": "mintingCoefficient",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -1005,21 +1428,41 @@
   {
     "inputs": [],
     "name": "previousPeriodSupply",
-    "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "previousTarget",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_index", "type": "uint256" },
-      { "internalType": "uint16", "name": "_periods", "type": "uint16" }
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_additionalDuration",
+        "type": "uint16"
+      }
     ],
     "name": "prolongStake",
     "outputs": [],
@@ -1028,14 +1471,26 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_from", "type": "address" },
-      { "internalType": "uint256", "name": "_value", "type": "uint256" },
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
       {
         "internalType": "address",
         "name": "_tokenContract",
         "type": "address"
       },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
     ],
     "name": "receiveApproval",
     "outputs": [],
@@ -1044,7 +1499,11 @@
   },
   {
     "inputs": [
-      { "internalType": "uint16", "name": "_index", "type": "uint16" }
+      {
+        "internalType": "uint16",
+        "name": "_index",
+        "type": "uint16"
+      }
     ],
     "name": "removeUnusedSubStake",
     "outputs": [],
@@ -1061,38 +1520,24 @@
   {
     "inputs": [],
     "name": "secondsPerPeriod",
-    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "contract AdjudicatorInterface",
-        "name": "_adjudicator",
-        "type": "address"
+        "internalType": "bool",
+        "name": "_reStake",
+        "type": "bool"
       }
     ],
-    "name": "setAdjudicator",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract PolicyManagerInterface",
-        "name": "_policyManager",
-        "type": "address"
-      }
-    ],
-    "name": "setPolicyManager",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "bool", "name": "_reStake", "type": "bool" }],
     "name": "setReStake",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -1100,7 +1545,11 @@
   },
   {
     "inputs": [
-      { "internalType": "bool", "name": "_enableSnapshots", "type": "bool" }
+      {
+        "internalType": "bool",
+        "name": "_enableSnapshots",
+        "type": "bool"
+      }
     ],
     "name": "setSnapshots",
     "outputs": [],
@@ -1108,7 +1557,13 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bool", "name": "_windDown", "type": "bool" }],
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_windDown",
+        "type": "bool"
+      }
+    ],
     "name": "setWindDown",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -1117,32 +1572,49 @@
   {
     "inputs": [
       {
-        "internalType": "contract WorkLockInterface",
-        "name": "_workLock",
+        "internalType": "address",
+        "name": "_staker",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_measureWork",
+        "type": "bool"
       }
     ],
-    "name": "setWorkLock",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "bool", "name": "_measureWork", "type": "bool" }
-    ],
     "name": "setWorkMeasurement",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_staker", "type": "address" },
-      { "internalType": "uint256", "name": "_penalty", "type": "uint256" },
-      { "internalType": "address", "name": "_investigator", "type": "address" },
-      { "internalType": "uint256", "name": "_reward", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_penalty",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_investigator",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_reward",
+        "type": "uint256"
+      }
     ],
     "name": "slashStaker",
     "outputs": [],
@@ -1150,17 +1622,39 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "stakerFromWorker",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "stakerInfo",
     "outputs": [
-      { "internalType": "uint256", "name": "value", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
       {
         "internalType": "uint16",
         "name": "currentCommittedPeriod",
@@ -1178,44 +1672,100 @@
       },
       {
         "internalType": "uint16",
-        "name": "lockReStakeUntilPeriod",
+        "name": "stub1",
         "type": "uint16"
       },
-      { "internalType": "uint256", "name": "completedWork", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "completedWork",
+        "type": "uint256"
+      },
       {
         "internalType": "uint16",
         "name": "workerStartPeriod",
         "type": "uint16"
       },
-      { "internalType": "address", "name": "worker", "type": "address" },
-      { "internalType": "uint256", "name": "flags", "type": "uint256" },
-      { "internalType": "uint256", "name": "reservedSlot1", "type": "uint256" },
-      { "internalType": "uint256", "name": "reservedSlot2", "type": "uint256" },
-      { "internalType": "uint256", "name": "reservedSlot3", "type": "uint256" },
-      { "internalType": "uint256", "name": "reservedSlot4", "type": "uint256" },
-      { "internalType": "uint256", "name": "reservedSlot5", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "worker",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "flags",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reservedSlot1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reservedSlot2",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reservedSlot3",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reservedSlot4",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reservedSlot5",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "stakers",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "supportsHistory",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "pure",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "target",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -1234,33 +1784,67 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_blockNumber", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_blockNumber",
+        "type": "uint256"
+      }
     ],
     "name": "totalStakedAt",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_owner", "type": "address" },
-      { "internalType": "uint256", "name": "_blockNumber", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_blockNumber",
+        "type": "uint256"
+      }
     ],
     "name": "totalStakedForAt",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "totalSupply",
-    "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "newOwner", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
     "name": "transferOwnership",
     "outputs": [],
@@ -1269,7 +1853,11 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_testTarget", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_testTarget",
+        "type": "address"
+      }
     ],
     "name": "verifyState",
     "outputs": [],
@@ -1278,7 +1866,11 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_value", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
     ],
     "name": "withdraw",
     "outputs": [],
