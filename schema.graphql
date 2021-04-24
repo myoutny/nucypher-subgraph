@@ -25,7 +25,7 @@ type Staker @entity {
   "Restaking enabled/disabled"
   restaking: Boolean
   "Wind-down enabled/disabled"
-  winding_down: Boolean
+  windingDown: Boolean
   "Period migration performed"
   migrated: Boolean
   "Snapshots enabled/disabled"

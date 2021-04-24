@@ -1,6 +1,7 @@
 import {BigInt} from "@graphprotocol/graph-ts"
 import {
-    CommitmentMade, Deposited,
+    CommitmentMade,
+    Deposited,
     Divided,
     Locked,
     Merged,
@@ -44,29 +45,29 @@ export function handleCommitmentMade(event: CommitmentMade): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
 
     let nextPeriodNumber = event.params.period
-    let next_period = Period.load(nextPeriodNumber.toString())
-    if (next_period == null) {
-        next_period = new Period(nextPeriodNumber.toString())
+    let nextPeriod = Period.load(nextPeriodNumber.toString())
+    if (nextPeriod == null) {
+        nextPeriod = new Period(nextPeriodNumber.toString())
 
         // Initialize next period
-        next_period.timestamp = event.block.timestamp.toI32()
-        next_period.activeStakers = ZERO_BI
-        next_period.totalStaked = ZERO_BD
+        nextPeriod.timestamp = event.block.timestamp.toI32()
+        nextPeriod.activeStakers = ZERO_BI
+        nextPeriod.totalStaked = ZERO_BD
 
         // Finalize previous period circulating supply
-        let prev_period_number = BigInt.fromI32(nextPeriodNumber - 2).toString()
-        let previous_period = Period.load(prev_period_number.toString())
-        if (previous_period != null) {
+        let prevPeriodNumber = BigInt.fromI32(nextPeriodNumber - 2).toString()
+        let prevPeriod = Period.load(prevPeriodNumber.toString())
+        if (prevPeriod != null) {
             let contract = StakingEscrow.bind(event.address)
-            previous_period.circulatingSupply = convertToDecimal(contract.previousPeriodSupply())
-            previous_period.save()
+            prevPeriod.circulatingSupply = convertToDecimal(contract.previousPeriodSupply())
+            prevPeriod.save()
         }
     }
 
     // Accumulate
-    next_period.totalStaked = next_period.totalStaked + convertToDecimal(event.params.value)
-    next_period.activeStakers = next_period.activeStakers + BigInt.fromI32(1)
-    next_period.save()
+    nextPeriod.totalStaked = nextPeriod.totalStaked + convertToDecimal(event.params.value)
+    nextPeriod.activeStakers = nextPeriod.activeStakers + BigInt.fromI32(1)
+    nextPeriod.save()
 
     staker.commitment = BigInt.fromI32(event.params.period)
     staker.save()
@@ -92,7 +93,7 @@ export function handleSnapshotSet(event: SnapshotSet): void {
 
 export function handleWindDownSet(event: WindDownSet): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.winding_down = event.params.windDown
+    staker.windingDown = event.params.windDown
     staker.save()
 }
 

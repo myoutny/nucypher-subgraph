@@ -66,7 +66,7 @@ export function getOrCreateStaker(id: string): Staker {
         staker.deposited = ZERO_BD
         staker.slashed = ZERO_BD
         staker.restaking = true
-        staker.winding_down = false
+        staker.windingDown = false
         staker.bonded = false
         staker.worker = NULL_ADDRESS.toString()
         staker.substakes = ZERO_BI
