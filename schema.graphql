@@ -4,12 +4,12 @@ A Stake on the nucypher network.
 type Staker @entity {
   "Staker ethereum address"
   id: ID!
-  "Total amount staked"
-  staked: BigInt
-  "Total deposits"
-  deposited: BigInt
-  "Total amount slashed"
-  slashed: BigInt
+  "Total token amount staked"
+  staked: BigDecimal
+  "Total token deposits"
+  deposited: BigDecimal
+  "Total token amount slashed"
+  slashed: BigDecimal
   "Number of substakes"
   substakes: BigInt
   "If the staker is bonded to a worker."
@@ -18,10 +18,10 @@ type Staker @entity {
   worker: String
   "Currently committed period"
   commitment: BigInt
-  "Total amount minted"
-  minted: BigInt
-  "Total withdraws"
-  withdrawn: BigInt
+  "Total token amount minted"
+  minted: BigDecimal
+  "Total token withdraws"
+  withdrawn: BigDecimal
   "Restaking enabled/disabled"
   restaking: Boolean
   "Wind-down enabled/disabled"
@@ -38,12 +38,12 @@ A single service period on the nucypher network.
 type Period @entity {
   "Period number used as ID"
   id: ID!
-  "Block timestamp at the begenning of the period"
+  "Block timestamp at the begenning of a period"
   timestamp: Int
-  "Total amount staked in this period"
-  totalStaked: BigInt
-  "Number of active stakers in this period"
+  "Total token amount staked in a single period"
+  totalStaked: BigDecimal
+  "Number of active stakers in a single period"
   activeStakers: BigInt
-  "Circulating supply in this period"
-  circulatingSupply: BigInt
+  "Circulating token supply in a single period"
+  circulatingSupply: BigDecimal
 }

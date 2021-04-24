@@ -1,6 +1,6 @@
 import {BigInt} from "@graphprotocol/graph-ts"
 import {
-    CommitmentMade,
+    CommitmentMade, Deposited,
     Divided,
     Locked,
     Merged,
@@ -14,71 +14,67 @@ import {
     Withdrawn,
     WorkerBonded
 } from "../generated/StakingEscrow/StakingEscrow"
-import {getOrCreateStaker, ZERO_BI} from "../utils/helpers";
+import {convertToDecimal, getOrCreateStaker, NULL_ADDRESS, ZERO_BD, ZERO_BI} from "../utils/helpers";
 import {Period} from "../generated/schema";
+
 
 export function handleLocked(event: Locked): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.substakes = staker.substakes + BigInt.fromI32(1)
-    staker.staked = staker.staked + event.params.value
+    let contract = StakingEscrow.bind(event.address)
+    staker.substakes = contract.getSubStakesLength(event.params.staker)
+    staker.staked = staker.staked + convertToDecimal(event.params.value)
     staker.save()
 }
 
 export function handleDivided(event: Divided): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.substakes = staker.substakes + BigInt.fromI32(1)
+    let contract = StakingEscrow.bind(event.address)
+    staker.substakes = contract.getSubStakesLength(event.params.staker)
     staker.save()
 }
 
 export function handleMerged(event: Merged): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.substakes = staker.substakes - BigInt.fromI32(1)
+    let contract = StakingEscrow.bind(event.address)
+    staker.substakes = contract.getSubStakesLength(event.params.staker)
     staker.save()
 }
 
 export function handleCommitmentMade(event: CommitmentMade): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
 
-    let next_period_number = event.params.period
+    let nextPeriodNumber = event.params.period
+    let next_period = Period.load(nextPeriodNumber.toString())
+    if (next_period == null) {
+        next_period = new Period(nextPeriodNumber.toString())
 
-    if (next_period_number < 10000) {
-        // Weekly Periods (168)
+        // Initialize next period
+        next_period.timestamp = event.block.timestamp.toI32()
+        next_period.activeStakers = ZERO_BI
+        next_period.totalStaked = ZERO_BD
 
-        let next_period = Period.load(next_period_number.toString())
-        if (next_period == null) {
-            next_period = new Period(next_period_number.toString())
-
-            // Initialize next period
-            next_period.timestamp = event.block.timestamp.toI32()
-            next_period.activeStakers = ZERO_BI
-            next_period.totalStaked = ZERO_BI
-            next_period.save()
-
-            // Finalize previous period circulating supply
-            let prev_period_number = BigInt.fromI32(next_period_number - 2).toString()
-            let previous_period = Period.load(prev_period_number.toString())
+        // Finalize previous period circulating supply
+        let prev_period_number = BigInt.fromI32(nextPeriodNumber - 2).toString()
+        let previous_period = Period.load(prev_period_number.toString())
+        if (previous_period != null) {
             let contract = StakingEscrow.bind(event.address)
-            previous_period.circulatingSupply = contract.previousPeriodSupply()
+            previous_period.circulatingSupply = convertToDecimal(contract.previousPeriodSupply())
             previous_period.save()
-
         }
-        next_period.totalStaked = next_period.totalStaked + event.params.value
-        next_period.activeStakers = next_period.activeStakers + BigInt.fromI32(1)
-        next_period.save()
-
-        staker.commitment = BigInt.fromI32(event.params.period)
-        staker.save()
-
-    } else {
-        // Daily Periods (24)
     }
 
+    // Accumulate
+    next_period.totalStaked = next_period.totalStaked + convertToDecimal(event.params.value)
+    next_period.activeStakers = next_period.activeStakers + BigInt.fromI32(1)
+    next_period.save()
 
+    staker.commitment = BigInt.fromI32(event.params.period)
+    staker.save()
 }
 
 export function handleMinted(event: Minted): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.minted = staker.minted + event.params.value
+    staker.minted = staker.minted + convertToDecimal(event.params.value)
     staker.save()
 }
 
@@ -102,14 +98,14 @@ export function handleWindDownSet(event: WindDownSet): void {
 
 export function handleWithdrawn(event: Withdrawn): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.withdrawn = staker.withdrawn + event.params.value
+    staker.withdrawn = staker.withdrawn + convertToDecimal(event.params.value)
     staker.save()
 }
 
 export function handleWorkerBonded(event: WorkerBonded): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
     staker.worker = event.params.worker.toHex()
-    staker.bonded = true
+    staker.bonded = staker.worker != NULL_ADDRESS.toHex();
     staker.save()
 }
 
@@ -121,6 +117,12 @@ export function handleMigrated(event: Migrated): void {
 
 export function handleSlashed(event: Slashed): void {
     let staker = getOrCreateStaker(event.params.staker.toHex())
-    staker.slashed = staker.slashed + event.params.penalty
+    staker.slashed = staker.slashed + convertToDecimal(event.params.penalty)
+    staker.save()
+}
+
+export function handleDeposited(event: Deposited): void {
+    let staker = getOrCreateStaker(event.params.staker.toHex())
+    staker.deposited = staker.deposited + convertToDecimal(event.params.value)
     staker.save()
 }

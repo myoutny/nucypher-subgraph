@@ -1,12 +1,14 @@
 import {Staker} from "../generated/schema";
 import {BigInt} from "@graphprotocol/graph-ts/index";
-import {Address} from "@graphprotocol/graph-ts";
+import {Address, BigDecimal} from "@graphprotocol/graph-ts";
 
+export let ZERO_BI = BigInt.fromI32(0);
+export let ZERO_BD = BigDecimal.fromString("0");
+export let BI_18 = BigInt.fromI32(18);
+export let ONE_BI = BigInt.fromI32(1);
 export let NULL_ADDRESS = Address.fromString(
   "0000000000000000000000000000000000000000"
 );
-
-export let ZERO_BI = BigInt.fromI32(0);
 
 
 export function getNuCypherTokenAddress(network: string): string {
@@ -42,21 +44,37 @@ export function getPolicyManagerAddress(network: string): string {
 }
 
 
+export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
+  let bd = BigDecimal.fromString("1");
+  for (let i = ZERO_BI; i.lt(decimals as BigInt); i = i.plus(ONE_BI)) {
+    bd = bd.times(BigDecimal.fromString("10"));
+  }
+  return bd;
+}
+
+
+export function convertToDecimal(eth: BigInt): BigDecimal {
+  return eth.toBigDecimal().div(exponentToBigDecimal(BI_18));
+}
+
+
 export function getOrCreateStaker(id: string): Staker {
     let staker = Staker.load(id);
     if (staker == null) {
         staker = new Staker(id)
-        staker.staked = ZERO_BI
+        staker.staked = ZERO_BD
+        staker.deposited = ZERO_BD
+        staker.slashed = ZERO_BD
         staker.restaking = true
         staker.winding_down = false
         staker.bonded = false
         staker.worker = NULL_ADDRESS.toString()
         staker.substakes = ZERO_BI
-        staker.minted = ZERO_BI
-        staker.withdrawn = ZERO_BI
+        staker.minted = ZERO_BD
+        staker.withdrawn = ZERO_BD
         staker.commitment = ZERO_BI
         staker.migrated = false
         staker.save()
     }
-  return staker as Staker;
+    return staker as Staker;
 }
