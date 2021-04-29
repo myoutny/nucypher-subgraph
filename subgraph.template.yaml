@@ -1,0 +1,63 @@
+specVersion: 0.0.2
+description: NuCypher - Threshold Cryptography Network
+repository: https://github.com/nucypher/nucypher-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: StakingEscrow
+    network: {{networkName}}
+    source:
+      startBlock: {{contracts.stakingEscrow.startBlock}}
+      address: "{{contracts.stakingEscrow.address}}"
+      abi: StakingEscrow
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Staker
+        - Period
+        - Transaction
+        - LockedEvent
+        - DepostiedEvent
+        - CommitmentEvent
+        - MintedEvent
+        - DividedEvent
+        - MergedEvent
+        - ProlongEvent
+        - ReStakeEvent
+        - WindDownEvent
+        - WithdrawEvent
+        - WorkerBondedEvent
+        - MigratedEvent
+        - SlashedEvent
+      abis:
+        - name: StakingEscrow
+          file: ./abis/StakingEscrow-5.7.1.json
+      eventHandlers:
+        - event: CommitmentMade(indexed address,indexed uint16,uint256)
+          handler: handleCommitmentMade
+        - event: Divided(indexed address,uint256,uint16,uint256,uint16)
+          handler: handleDivided
+        - event: Locked(indexed address,uint256,uint16,uint16)
+          handler: handleLocked
+        - event: Merged(indexed address,uint256,uint256,uint16)
+          handler: handleMerged
+        - event: Minted(indexed address,indexed uint16,uint256)
+          handler: handleMinted
+        - event: ReStakeSet(indexed address,bool)
+          handler: handleReStakeSet
+        - event: WindDownSet(indexed address,bool)
+          handler: handleWindDownSet
+        - event: Withdrawn(indexed address,uint256)
+          handler: handleWithdrawn
+        - event: WorkerBonded(indexed address,indexed address,indexed uint16)
+          handler: handleWorkerBonded
+        - event: Migrated(indexed address,indexed uint16)
+          handler: handleMigrated
+        - event: SnapshotSet(indexed address,bool)
+          handler: handleSnapshotSet
+        - event: Slashed(indexed address,uint256,indexed address,uint256)
+          handler: handleSlashed
+      file: ./src/StakingEscrow-mapping.ts
