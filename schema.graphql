@@ -1,39 +1,42 @@
 """
-A Stake on the nucypher network.
+A Staker on the nucypher network.
 """
 type Staker @entity {
   "Staker ethereum address"
   id: ID!
   "Total token amount staked"
-  staked: BigDecimal
+  staked: BigDecimal!
   "Total token deposits"
-  deposited: BigDecimal
+  deposited: BigDecimal!
   "Total token amount slashed"
-  slashed: BigDecimal
+  slashed: BigDecimal!
   "Number of substakes"
-  substakes: BigInt
+  substakes: BigInt!
   "If the staker is bonded to a worker."
-  bonded: Boolean
+  bonded: Boolean!
   "Worker address staker is bonded to"
-  worker: String
+  worker: String!
   "Currently committed period"
-  commitment: BigInt
+  lastCommitment: BigInt!
   "Total token amount minted"
-  minted: BigDecimal
+  minted: BigDecimal!
   "Total token withdraws"
-  withdrawn: BigDecimal
+  withdrawn: BigDecimal!
   "Restaking enabled/disabled"
-  restaking: Boolean
+  restaking: Boolean!
   "Wind-down enabled/disabled"
-  windingDown: Boolean
+  windingDown: Boolean!
   "Period migration performed"
-  migrated: Boolean
+  migrated: Boolean!
   "Snapshots enabled/disabled"
-  snapshots: Boolean
+  snapshots: Boolean!
+  "Events this staker has emitted via StakingEscrow"
+  events: [StakerEvent!] @derivedFrom(field: "staker")
 }
 
+
 """
-A single service period on the nucypher network.
+A single 7 day service period on the nucypher network.
 """
 type Period @entity {
   "Period number used as ID"
@@ -41,9 +44,181 @@ type Period @entity {
   "Block timestamp at the begenning of a period"
   timestamp: Int
   "Total token amount staked in a single period"
-  totalStaked: BigDecimal
+  totalStaked: BigDecimal!
   "Number of active stakers in a single period"
-  activeStakers: BigInt
+  activeStakers: BigInt!
   "Circulating token supply in a single period"
-  circulatingSupply: BigDecimal
+  circulatingSupply: BigDecimal!
+  "Participation rate of the period (totalStaked/circulatingSupply)"
+  participationRate: BigDecimal!
+  "Total minted rewards in this period"
+  minted: BigDecimal!
+  "True if this period's values have been finalized"
+  finalized: Boolean!
+  "True if this period is genesis era duration (24 hours)"
+  genesis: Boolean!
+}
+
+###############################################################################
+#
+# Event types && transactions for historical records
+#
+###############################################################################
+interface StakerEvent {
+  id: ID!
+  timestamp: Int!
+  transaction: Transaction!
+  period: Period!
+  staker: Staker!
+}
+
+"""
+Transaction entities are created for each Ethereum transaction that contains an interaction with NuCypher contracts.
+"""
+type Transaction @entity {
+  "Ethereum transaction hash"
+  id: ID!
+  "Block transaction was mined in"
+  blockNumber: BigInt!
+  "Timestamp for transaction"
+  timestamp: Int!
+  "Amount of gas used in the transaction"
+  gasUsed: BigInt!
+  "Cost per unit of gas specified for the transaction"
+  gasPrice: BigInt!
+  "The sending party of the transaction"
+  from: String!
+  "The receiving party of the transaction"
+  to: String!
+  "The events emitted within this transaction"
+  events: [StakerEvent!] @derivedFrom(field: "transaction")
+}
+
+type LockedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  value: BigDecimal!
+  firstPeriod: BigInt!
+  duration: BigInt!
+}
+
+type DepositedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  value: BigDecimal!
+  duration: BigInt!
+}
+
+type CommitmentEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  commitmentPeriod: BigInt!
+}
+
+type MintedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  mintingPeriod: BigInt!
+  value: BigDecimal!
+}
+
+type DividedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  oldValue: BigDecimal!
+  newValue: BigDecimal!
+  lastPeriod: BigInt!
+  duration: BigInt!
+}
+
+type MergedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  transaction: Transaction!
+  period: Period!
+  staker: Staker!
+  value1: BigDecimal!
+  value2: BigDecimal!
+  lastPeriod: BigInt!
+}
+
+type ProlongEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  transaction: Transaction!
+  period: Period!
+  staker: Staker!
+  lastPeriod: BigInt!
+  extenstion: BigInt!
+}
+
+type ReStakeEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  reStake: Boolean!
+}
+
+type WindDownEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  windDown: Boolean!
+}
+
+type WithdrawEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  value: BigDecimal!
+}
+
+type WorkerBondedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+  worker: String!
+  startPeriod: BigInt!
+}
+
+type MigratedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  period: Period!
+  transaction: Transaction!
+  staker: Staker!
+}
+
+type SlashedEvent implements StakerEvent @entity {
+  id: ID!
+  timestamp: Int!
+  transaction: Transaction!
+  period: Period!
+  staker: Staker!
+  penalty: BigDecimal!
+  investigator: String!
+  reward: BigDecimal!
 }
