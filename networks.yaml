@@ -1,0 +1,45 @@
+mainnet:
+  contracts:
+    stakingEscrow:
+      address: '0xbbD3C0C794F40c4f993B03F65343aCC6fcfCb2e2'
+      startBlock: 10763506
+    policyManager:
+      address: '0x67E4A942c067Ff25cE7705B69C318cA2Dfa54D64'
+      startBlock: 10763539
+    Adjudicator:
+      address: '0x359924Be0640659F34198e518BF3d40Fb56160BE'
+      startBlock: 10763578
+    nucypherToken:
+      address: '0x4fE83213D56308330EC302a8BD641f1d0113A4Cc'
+      startBlock: 10763456
+  networkName: mainnet
+rinkeby:
+  contracts:
+    stakingEscrow:
+      address: '0x6A6F917a3FF3d33d26BB4743140F205486cD6B4B'
+      startBlock: 6510415
+    policyManager:
+      address: '0x4db603E42E6798Ac534853AA2c0fF5618cb0ebE5'
+      startBlock: 6510421
+    Adjudicator:
+      address: '0xE1d0C09b94ba522BCC1b73922dc1f0b6ca9bEA26'
+      startBlock: 6510430
+    nucypherToken:
+      address: '0x78D591D90a4a768B9D2790deA465D472b6Fe0f18'
+      startBlock: 6506339
+  networkName: rinkeby
+goerli:
+  contracts:
+    stakingEscrow:
+      address: '0x40Ca356d8180Ddc21C82263F9EbCeaAc6Cad7250'
+      startBlock: 4149040
+    policyManager:
+      address: '0xaC5e34d3FD41809873968c349d1194D23045b9D2'
+      startBlock: 4149126
+    Adjudicator:
+      address: '0xC62e20B599416e4B5F3b54d50837F070bFec6412'
+      startBlock: 4149149
+    nucypherToken:
+      address: '0x02B50E38E5872068F325B1A7ca94D90ce2bfff63'
+      startBlock: 4148995
+  networkName: goerli
