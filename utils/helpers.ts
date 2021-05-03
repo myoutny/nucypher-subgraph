@@ -141,8 +141,8 @@ export function createPeriod(periodNumber: BigInt, timestamp: i32): Period {
     period.timestamp = timestamp
     period.activeStakers = ZERO_BI
     period.totalStaked = ZERO_BD
-    period.circulatingSupply = ZERO_BD
-    period.participationRate = ZERO_BD
+    period.circulatingSupply = null
+    period.participationRate = null
     period.minted = ZERO_BD
     period.finalized = false
     period.genesis = periodNumber > GENESIS_ERA_PERIOD_NUMBER;

@@ -65,7 +65,6 @@ export function handleLocked(event: Locked): void {
 
     // staker
     staker.substakes = contract.getSubStakesLength(event.params.staker)
-    staker.staked = staker.staked.plus(convertToDecimal(event.params.value))
     staker.save()
 
 }
@@ -154,6 +153,8 @@ export function handleCommitmentMade(event: CommitmentMade): void {
     nextPeriod.save()
 
     // Update this staker's last commitment period
+    let contract = StakingEscrow.bind(event.address)
+    staker.staked = convertToDecimal(contract.stakerInfo(event.params.staker).value0)
     staker.lastCommitment = BigInt.fromI32(event.params.period)
     staker.save()
 }
