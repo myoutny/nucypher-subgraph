@@ -8,15 +8,30 @@ dataSources:
     name: StakingEscrow
     network: mainnet
     source:
+      startBlock: 10763506
       address: "0xbbD3C0C794F40c4f993B03F65343aCC6fcfCb2e2"
       abi: StakingEscrow
-      startBlock: 10763506
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
         - Staker
+        - Period
+        - Transaction
+        - LockedEvent
+        - DepostiedEvent
+        - CommitmentEvent
+        - MintedEvent
+        - DividedEvent
+        - MergedEvent
+        - ProlongEvent
+        - ReStakeEvent
+        - WindDownEvent
+        - WithdrawEvent
+        - WorkerBondedEvent
+        - MigratedEvent
+        - SlashedEvent
       abis:
         - name: StakingEscrow
           file: ./abis/StakingEscrow-5.7.1.json
@@ -45,5 +60,4 @@ dataSources:
           handler: handleSnapshotSet
         - event: Slashed(indexed address,uint256,indexed address,uint256)
           handler: handleSlashed
-
       file: ./src/StakingEscrow-mapping.ts
