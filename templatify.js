@@ -16,11 +16,11 @@ Handlebars.registerHelper("ifEquals", function (arg1, arg2, options) {
 function getNetworkNameForSubgraph() {
   switch (process.env.SUBGRAPH) {
     case undefined:
-    case "nucypher/nucypher":
+    case "myoutny/nucypher-subgraph":
       return "mainnet";
-    case "nucypher/nucypher-rinkeby":
+    case "myoutny/nucypher-rinkeby":
       return "rinkeby";
-    case "nucypher/nucypher-goerli":
+    case "myoutny/nucypher-goerli":
       return "rinkeby";
     default:
       return null;

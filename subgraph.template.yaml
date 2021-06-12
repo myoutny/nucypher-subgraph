@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: NuCypher - Threshold Cryptography Network
-repository: https://github.com/nucypher/nucypher-subgraph
+repository: https://github.com/myoutny/nucypher-subgraph
 schema:
   file: ./schema.graphql
 dataSources:

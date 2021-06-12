@@ -8,7 +8,7 @@
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ $SUBGRAPH",
     "deploy:local": "graph deploy nucypher/nucypher --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "deploy:docker": "graph deploy nucypher/nucypher --debug --ipfs http://ipfs:5001 --node http://graph-node:8020",
-    "deploy:mainnet": "yarn prepare:mainnet && SUBGRAPH=nucypher/nucypher yarn deploy",
+    "deploy:mainnet": "yarn prepare:mainnet && SUBGRAPH=myoutny/nucypher-subgraph yarn deploy",
     "deploy:rinkeby": "yarn prepare:rinkeby && SUBGRAPH=nucypher/nucypher-rinkeby yarn deploy",
     "deploy:goerli": "yarn prepare:goerli && SUBGRAPH=nucypher/nucypher-goerli yarn deploy",
     "prepare:mainnet": "NETWORK_NAME=mainnet node ./templatify.js",
